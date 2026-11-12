@@ -1,0 +1,92 @@
+HOLDOUT: delivery from 2026-08-01 to 2026-10-31
+
+Periods in the window with every feature: 8,836 on 92 days
+
+PRIMARY TEST: ECMWF against the other models
+periods_traded            2440
+mwh_traded              610.00
+pnl_eur                 751.61
+eur_per_mwh               1.23
+ci95_low                 -9.35
+ci95_high                12.20
+median_per_mwh            0.00
+hit_rate                  0.41
+without_top_0.1pct        1.23
+max_drawdown_eur     -2,832.80
+break_even_cost           1.23
+days                        92
+p_one_sided               0.41
+  -> does not pass; a profit that is not told apart from zero is inconclusive (one-sided p = 0.405, level 0.05)
+
+  buy :   216 periods,  25.73 EUR/MWh, 95% CI [nan, nan], total    1,390 EUR
+  sell: 2,224 periods,  -1.15 EUR/MWh, 95% CI [-11.97, 9.35], total     -638 EUR
+  for comparison, selling in every period: -1.36 EUR/MWh
+
+SECONDARY TEST: wind rule
+periods_traded            2264
+mwh_traded              566.00
+pnl_eur               2,243.44
+eur_per_mwh               3.96
+ci95_low                 -6.64
+ci95_high                15.97
+median_per_mwh            0.00
+hit_rate                  0.30
+without_top_0.1pct        3.35
+max_drawdown_eur     -2,668.27
+break_even_cost           3.96
+days                        92
+p_one_sided               0.22
+  -> does not pass; a profit that is not told apart from zero is inconclusive (one-sided p = 0.222)
+
+SECONDARY TEST: heavy-traffic days
+Heavy-traffic days: 28 in all, of which 4 in the window
+  evening minus rest of day, spread against control days (EUR/MWh), all days
+    mean -7.93   median 8.56   95% CI [-29.68, 11.54]   sign-flip p = 0.462
+  the days in the window
+            controls  evening_spread  did_spread
+day                                             
+2026-08-09         8          -47.71      -62.94
+2026-10-09         7           31.21       32.19
+2026-10-10         7          104.67       70.73
+2026-10-18         5           41.63       71.52 
+
+DESCRIPTION ONLY, no test and no conclusion drawn
+
+Checks on wind in the window (correlation with a 95% interval)
+                                                           correlation  ci95_low  ci95_high                  expected
+check                                                                                                                
+newest run vs latest Energinet forecast                           0.92      0.90       0.94                close to 1
+forecast made 1-2 days ahead vs latest Energinet forecast         0.90      0.88       0.92  lower than the row above
+12 h revision before the gate vs revision after 18:00             0.06     -0.04       0.15                  positive
+24 h revision before the gate vs revision after 18:00             0.15      0.01       0.27                  positive
+model spread vs size of the revision after 18:00                  0.22      0.12       0.33                  positive
+ECMWF minus other models vs revision after 18:00                 -0.23     -0.35      -0.11                  negative 
+
+Mean forecast of cubed wind per model
+ecmwf_ifs025           719.00
+icon_seamless          867.00
+gfs_seamless           910.00
+ecmwf_aifs025_single   692.00
+Share of periods in which ECMWF is below the mean of the other models
+all periods                    0.76
+largest fifth of differences   0.92 
+
+The other strategies in the window
+                                        periods_traded   pnl_eur  eur_per_mwh  ci95_low  ci95_high  hit_rate
+strategy                                                                                                    
+wind rule                                         2248  2,028.64         3.61     -7.17      15.68      0.31
+always buy                                        8836  3,006.06         1.36     -3.68       6.48      0.28
+logistic regression                               1586    956.83         2.41     -9.49      14.82      0.34
+logistic regression, extra features               1754   -303.05        -0.69    -12.44      10.95      0.32
+gradient boosting                                 1135    243.50         0.86    -10.86      13.83      0.30
+gradient boosting, extra features                 1217  4,691.54        15.42      2.44      28.87      0.37
+wind rule, two-sided                              3444  1,952.65         2.27     -5.46      10.76      0.33
+direction model                                    897  2,367.81        10.56     -5.04      25.65      0.48
+direction model, sized                            8836  2,961.25         2.95     -2.49       8.37      0.38
+spread regression                                 1604  2,019.31         5.04     -5.64      16.27      0.31
+wind rule, newest run                             2368  2,810.24         4.75     -5.71      16.25      0.31
+revision, 12 h                                    2104 -1,268.89        -2.41    -12.34       6.98      0.34
+revision, 24 h                                    2224 -5,406.64        -9.72    -18.91      -0.48      0.33
+wind rule when models disagree                    1712  2,575.73         6.02     -6.62      20.20      0.32
+logistic regression, forecast features            1639    570.96         1.39    -10.71      13.84      0.33
+gradient boosting, forecast features              1270  1,541.02         4.85     -7.74      18.72      0.33
